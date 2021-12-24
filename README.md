@@ -1,5 +1,5 @@
 # Parkrun-API-Python
-Python API for Parkrun data
+Python API for Parkrun data, currently live at parkrun-api.rggs.xyz. This is a light-weight and unofficial API.
 
 ## Python Requirements
 ```python
