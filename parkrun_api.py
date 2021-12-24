@@ -91,7 +91,7 @@ class Event:
 
                 if str(event.countryCode) == str(country.id):
 
-                    event.url = f"{country.url}/{event.name}/".replace("//", "/")
+                    event.url = f"{country.url}/{event.name}/"
 
         return events
 
@@ -432,6 +432,9 @@ class AgeGradedLeagueRank():
                 )
 
                 ageGradedLeagueRanks.append(ageGradedLeagueRank)
+
+                if len(ageGradedLeagueRanks) == quantity:
+                    return ageGradedLeagueRanks
 
         return ageGradedLeagueRanks
 
@@ -1150,7 +1153,7 @@ class HistoricNumber:
             splitContentRow = contentRow.split(",")
             dateStart = splitContentRow[0].find("(")
             dateEnd = splitContentRow[0].find(")")
-            date = splitContentRow[0][dateStart + 1:dateEnd]
+            date = splitContentRow[0][dateStart + 1:dateEnd].replace("\"","")
 
             historicNumber = HistoricNumber(
                 _date=date,
