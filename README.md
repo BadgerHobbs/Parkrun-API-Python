@@ -33,5 +33,12 @@ def ExampleUsage():
     freedomRuns = FreedomRun.GetFreedomRunsForCountry(countries[0])
     historicNumbers = HistoricNumber.GetHistoricNumbersForCountry()
 
+    globalWeekFirstFinishers = WeekFirstFinisher.GetWeekFirstFinishersGlobally()
+    globalNewCategoryRecords = WeekNewCategoryRecord.GetWeekNewCategoryRecordsGlobally()
+    globalSub17Runs = WeekSub17Run.GetWeekSub17RunsGlobally()
+    globalTopAgeGrades = WeekTopAgeGrade.GetWeekTopAgeGradesGlobally()
+    globalCourseRecords = CourseRecord.GetCourseRecordsGlobally()
+    globalFreedomRuns = FreedomRun.GetFreedomRunsGlobally()
+
     print("Done")
 ```

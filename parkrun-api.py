@@ -488,6 +488,32 @@ class WeekFirstFinisher:
 
         return weekFirstFinishers
 
+    @staticmethod
+    def GetWeekFirstFinishersGlobally():
+
+        weekFirstFinishers = []
+
+        weekFirstFinisherHTML = session.get("https://www.parkrun.com/results/firstfinishers/").text
+
+        weekFirstFinisherSoup = BeautifulSoup(weekFirstFinisherHTML, "html.parser")
+        weekFirstFinisherRows = weekFirstFinisherSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for weekFirstFinisherRow in weekFirstFinisherRows:
+
+            rowData = weekFirstFinisherRow.findAll("td")
+
+            weekFirstFinisher = WeekFirstFinisher(
+                _event=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _maleParkRunner=rowData[1].find("a").text if rowData[1].find("a") else None,
+                _maleClub=rowData[2].text if rowData[2] else None,
+                _femaleParkRunner=rowData[3].find("a").text if rowData[3].find("a") else None,
+                _femaleClub=rowData[4].text if rowData[4] else None,
+            )
+
+            weekFirstFinishers.append(weekFirstFinisher)
+
+        return weekFirstFinishers
+
 class WeekSub17Run:
 
     def __init__(self, _event=None, _parkRunner=None, _time=None, _club=None):
@@ -518,6 +544,31 @@ class WeekSub17Run:
                 _parkRunner=rowData[2].find("a").text if rowData[2].find("a") else None,
                 _time=rowData[3].text if rowData[3] else None,
                 _club=rowData[4].find("a").text if rowData[4].find("a") else None,
+            )
+
+            weekSub17Runs.append(weekSub17Run)
+
+        return weekSub17Runs
+
+    @staticmethod
+    def GetWeekSub17RunsGlobally():
+
+        weekSub17Runs = []
+
+        weekSub17RunHTML = session.get("https://www.parkrun.com/results/sub17/").text
+
+        weekSub17RunSoup = BeautifulSoup(weekSub17RunHTML, "html.parser")
+        weekSub17RunRows = weekSub17RunSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for weekSub17RunRow in weekSub17RunRows:
+
+            rowData = weekSub17RunRow.findAll("td")
+
+            weekSub17Run = WeekSub17Run(
+                _event=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _parkRunner=rowData[1].find("a").text if rowData[1].find("a") else None,
+                _time=rowData[2].text if rowData[2] else None,
+                _club=rowData[3].text if rowData[3] else None,
             )
 
             weekSub17Runs.append(weekSub17Run)
@@ -564,6 +615,33 @@ class WeekTopAgeGrade:
 
         return weekTopAgeGrades
 
+    @staticmethod
+    def GetWeekTopAgeGradesGlobally():
+
+        weekTopAgeGrades = []
+
+        weekTopAgeGradeHTML = session.get("https://www.parkrun.com/results/topagegrade/").text
+
+        weekTopAgeGradeSoup = BeautifulSoup(weekTopAgeGradeHTML, "html.parser")
+        weekTopAgeGradeRows = weekTopAgeGradeSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for weekTopAgeGradeRow in weekTopAgeGradeRows:
+
+            rowData = weekTopAgeGradeRow.findAll("td")
+
+            weekTopAgeGrade = WeekTopAgeGrade(
+                _event=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _parkRunner=rowData[1].find("a").text if rowData[1].find("a") else None,
+                _time=rowData[2].text if rowData[2] else None,
+                _ageGroup=rowData[3].text if rowData[3] else None,
+                _ageGrade=rowData[4].text if rowData[4] else None,
+                _club=rowData[5].text if rowData[5] else None,
+            )
+
+            weekTopAgeGrades.append(weekTopAgeGrade)
+
+        return weekTopAgeGrades
+
 class WeekNewCategoryRecord:
 
     def __init__(self, _event=None, _parkRunner=None, _time=None, _ageGroup=None, _ageGrade=None, _club=None):
@@ -598,6 +676,33 @@ class WeekNewCategoryRecord:
                 _ageGroup=rowData[4].text if rowData[4] else None,
                 _ageGrade=rowData[5].text if rowData[5] else None,
                 _club=rowData[6].find("a").text if rowData[6].find("a") else None
+            )
+
+            weekNewCategoryRecords.append(weekNewCategoryRecord)
+
+        return weekNewCategoryRecords
+        
+    @staticmethod
+    def GetWeekNewCategoryRecordsGlobally():
+
+        weekNewCategoryRecords = []
+
+        weekNewCategoryRecordHTML = session.get("https://www.parkrun.com/results/newcategoryrecords/").text
+
+        weekNewCategoryRecordSoup = BeautifulSoup(weekNewCategoryRecordHTML, "html.parser")
+        weekNewCategoryRecordRows = weekNewCategoryRecordSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for weekNewCategoryRecordRow in weekNewCategoryRecordRows:
+
+            rowData = weekNewCategoryRecordRow.findAll("td")
+
+            weekNewCategoryRecord = WeekNewCategoryRecord(
+                _event=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _parkRunner=rowData[1].find("a").text if rowData[1].find("a") else None,
+                _time=rowData[2].text if rowData[2] else None,
+                _ageGroup=rowData[3].text if rowData[3] else None,
+                _ageGrade=rowData[4].text if rowData[4] else None,
+                _club=rowData[5].text if rowData[5] else None
             )
 
             weekNewCategoryRecords.append(weekNewCategoryRecord)
@@ -640,6 +745,34 @@ class CourseRecord:
                 _maleParkRunner=rowData[6].find("a").text if rowData[6].find("a") else None,
                 _maleTime=rowData[7].text if rowData[7] else None,
                 _maleDate=rowData[8].text if rowData[8] else None,
+            )
+
+            courseRecords.append(courseRecord)
+
+        return courseRecords
+
+    @staticmethod
+    def GetCourseRecordsGlobally():
+
+        courseRecords = []
+
+        courseRecordHTML = session.get("https://www.parkrun.com/results/courserecords/").text
+
+        courseRecordSoup = BeautifulSoup(courseRecordHTML, "html.parser")
+        courseRecordRows = courseRecordSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for courseRecordRow in courseRecordRows:
+
+            rowData = courseRecordRow.findAll("td")
+
+            courseRecord = CourseRecord(
+                _event=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _femaleParkRunner=rowData[1].find("a").text if rowData[1].find("a") else None,
+                _femaleTime=rowData[2].text if rowData[2] else None,
+                _femaleDate=rowData[3].text if rowData[3] else None,
+                _maleParkRunner=rowData[4].find("a").text if rowData[4].find("a") else None,
+                _maleTime=rowData[5].text if rowData[5] else None,
+                _maleDate=rowData[6].text if rowData[6] else None,
             )
 
             courseRecords.append(courseRecord)
@@ -768,7 +901,7 @@ class Joined100Club:
 
         joined100Clubs = []
 
-        joined100ClubHTML = session.get(country.url + "/results/joined100clubs/").text
+        joined100ClubHTML = session.get(country.url + "/results/100clubbers/").text
 
         joined100ClubSoup = BeautifulSoup(joined100ClubHTML, "html.parser")
         joined100ClubRows = joined100ClubSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
@@ -835,6 +968,31 @@ class FreedomRun:
         freedomRuns = []
 
         freedomRunHTML = session.get(country.url + "/results/freedom/").text
+
+        freedomRunSoup = BeautifulSoup(freedomRunHTML, "html.parser")
+        freedomRunRows = freedomRunSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for freedomRunRow in freedomRunRows:
+
+            rowData = freedomRunRow.findAll("td")
+
+            freedomRun = FreedomRun(
+                _parkRunner=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _date=rowData[1].text if rowData[1] else None,
+                _location=rowData[2].text if rowData[2] else None,
+                _runTime=rowData[3].text if rowData[3] else None,
+            )
+
+            freedomRuns.append(freedomRun)
+
+        return freedomRuns
+
+    @staticmethod
+    def GetFreedomRunsGlobally():
+
+        freedomRuns = []
+
+        freedomRunHTML = session.get("https://www.parkrun.com/results/freedom/").text
 
         freedomRunSoup = BeautifulSoup(freedomRunHTML, "html.parser")
         freedomRunRows = freedomRunSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
@@ -937,5 +1095,12 @@ def ExampleUsage():
     mostFirstFinishes = MostFirstFinish.GetMostFirstFinishesForCountry(countries[0])
     freedomRuns = FreedomRun.GetFreedomRunsForCountry(countries[0])
     historicNumbers = HistoricNumber.GetHistoricNumbersForCountry()
+
+    globalWeekFirstFinishers = WeekFirstFinisher.GetWeekFirstFinishersGlobally()
+    globalNewCategoryRecords = WeekNewCategoryRecord.GetWeekNewCategoryRecordsGlobally()
+    globalSub17Runs = WeekSub17Run.GetWeekSub17RunsGlobally()
+    globalTopAgeGrades = WeekTopAgeGrade.GetWeekTopAgeGradesGlobally()
+    globalCourseRecords = CourseRecord.GetCourseRecordsGlobally()
+    globalFreedomRuns = FreedomRun.GetFreedomRunsGlobally()
 
     print("Done")
