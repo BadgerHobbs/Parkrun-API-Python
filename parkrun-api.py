@@ -2,6 +2,21 @@ import requests
 from bs4 import BeautifulSoup
 import math
 
+session = requests.Session()
+session.headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Accept-Encoding": "gzip, deflate, br",
+    "DNT": "1",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1"
+}
+
 class Country:
 
     def __init__(self, _id=None, _url=None):
@@ -16,7 +31,7 @@ class Country:
 
         countries = []
 
-        countriesJson = requests.get("https://images.parkrun.com/events.json").json()["countries"]
+        countriesJson = session.get("https://images.parkrun.com/events.json").json()["countries"]
 
         for countryKey in countriesJson:
 
@@ -49,7 +64,7 @@ class Event:
 
         events = []
 
-        eventsJson = requests.get("https://images.parkrun.com/events.json").json()["events"]["features"]
+        eventsJson = session.get("https://images.parkrun.com/events.json").json()["events"]["features"]
 
         for event in eventsJson:
 
@@ -74,9 +89,9 @@ class Event:
 
             for event in events:
 
-                if event.countryCode == country.id:
+                if str(event.countryCode) == str(country.id):
 
-                    event.url = f"{country.url}/{event.name}/".replace("//", "/")
+                    event.url = "https://" + f"{country.url}/{event.name}/".replace("//", "/")
 
         return events
 
@@ -100,7 +115,7 @@ class Result():
 
         results = []
 
-        resultsHTML = requests.get(event.url + "results/{eventNumber}/").text
+        resultsHTML = session.get(event.url + "results/{eventNumber}/").text
 
         resultsSoup = BeautifulSoup(resultsHTML, "html.parser")
         resultRows = resultsSoup.findAll("tr", {"class": "Results-table-row"})
@@ -147,14 +162,14 @@ class EventHistory():
 
         eventHistorys = []
 
-        eventHistoryHTML = requests.get(event.url + "results/eventhistory/").text
+        eventHistoryHTML = session.get(event.url + "results/eventhistory/").text
 
         eventHistorySoup = BeautifulSoup(eventHistoryHTML, "html.parser")
         eventHistoryRows = eventHistorySoup.findAll("tr", {"class": "Results-table-row"})
 
         for eventHistoryRow in eventHistoryRows:
 
-            eventHistory = Result(
+            eventHistory = EventHistory(
                 _eventNumber=eventHistoryRow["data-parkrun"],
                 _date=eventHistoryRow["data-date"],
                 _finishers=eventHistoryRow["data-finishers"],
@@ -185,7 +200,7 @@ class FirstFinisher():
 
         firstFinishers = []
 
-        firstFinishersHTML = requests.get(event.url + "results/firstfinishescount/").text
+        firstFinishersHTML = session.get(event.url + "results/firstfinishescount/").text
 
         firstFinishersSoup = BeautifulSoup(firstFinishersHTML, "html.parser")
         firstFinishersRows = firstFinishersSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
@@ -195,10 +210,10 @@ class FirstFinisher():
             rowData = firstFinisherRow.findAll("td")
 
             firstFinisher = FirstFinisher(
-                _parkRunner=rowData[0].find("a").text,
-                _firstPlaceFinishes=rowData[1].text,
-                _bestTime=rowData[2].text,
-                _sex=rowData[3].text
+                _parkRunner=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _firstPlaceFinishes=rowData[1].text if rowData[1] else None,
+                _bestTime=rowData[2].text if rowData[2] else None,
+                _sex=rowData[3].text if rowData[3] else None
             )
 
             firstFinishers.append(firstFinisher)
@@ -223,7 +238,7 @@ class AgeCategoryRecord():
 
         getAgeCategoryRecords = []
 
-        getAgeCategoryRecordsHTML = requests.get(event.url + "results/agecategoryrecords/").text
+        getAgeCategoryRecordsHTML = session.get(event.url + "results/agecategoryrecords/").text
 
         getAgeCategoryRecordsSoup = BeautifulSoup(getAgeCategoryRecordsHTML, "html.parser")
         getAgeCategoryRecordsRows = getAgeCategoryRecordsSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
@@ -233,12 +248,12 @@ class AgeCategoryRecord():
             rowData = ageCategoryRecordRow.findAll("td")
 
             ageCategoryRecord = AgeCategoryRecord(
-                _ageCategory=rowData[0].find("a").find("strong").text,
-                _eventNumber=rowData[2].find("a").text,
-                _date=rowData[3].find("a").text,
-                _parkRunner=rowData[4].text,
-                _time=rowData[5].text,
-                _ageGrade=rowData[6].text
+                _ageCategory=rowData[0].find("a").find("strong").text if rowData[0].find("a") else None,
+                _eventNumber=rowData[2].find("a").text if rowData[2].find("a") else None,
+                _date=rowData[3].find("a").text if rowData[3].find("a") else None,
+                _parkRunner=rowData[4].text if rowData[4] else None,
+                _time=rowData[5].text if rowData[5] else None,
+                _ageGrade=rowData[6].text if rowData[6] else None
             )
 
             getAgeCategoryRecords.append(ageCategoryRecord)
@@ -261,7 +276,7 @@ class Club():
 
         clubs = []
 
-        clubsHTML = requests.get(event.url + "results/clublist/").text
+        clubsHTML = session.get(event.url + "results/clublist/").text
 
         clubsSoup = BeautifulSoup(clubsHTML, "html.parser")
         clubRows = clubsSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
@@ -271,10 +286,10 @@ class Club():
             rowData = clubRow.findAll("td")
 
             club = Club(
-                _name=rowData[0].find("a").text,
-                _numberOfParkrunners=rowData[1].text,
-                _numberOfRuns=rowData[2].text,
-                _clubHomePage=rowData[3].find("a")["href"],
+                _name=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _numberOfParkrunners=rowData[1].text if rowData[1] else None,
+                _numberOfRuns=rowData[2].text if rowData[2] else None,
+                _clubHomePage=rowData[3].find("a")["href"] if rowData[3].find("a") else None,
             )
 
             clubs.append(club)
@@ -298,7 +313,7 @@ class Sub20Woman():
 
         sub20Women = []
 
-        sub20WomenHTML = requests.get(event.url + "results/sub20women/").text
+        sub20WomenHTML = session.get(event.url + "results/sub20women/").text
 
         sub20WomenSoup = BeautifulSoup(sub20WomenHTML, "html.parser")
         sub20WomenRows = sub20WomenSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
@@ -308,11 +323,11 @@ class Sub20Woman():
             rowData = sub20WomenRow.findAll("td")
 
             sub20Woman = Sub20Woman(
-                _rank=rowData[0].text,
-                _parkRunner=rowData[1].find("a").text,
-                _numberOfRuns=rowData[2].text,
-                _fastestTime=rowData[3].text,
-                _club=rowData[4].find("a").text,
+                _rank=rowData[0].text if rowData[0] else None,
+                _parkRunner=rowData[1].find("a").text if rowData[1].find("a") else None,
+                _numberOfRuns=rowData[2].text if rowData[2] else None,
+                _fastestTime=rowData[3].text if rowData[3] else None,
+                _club=rowData[4].find("a").text if rowData[4].find("a") else None
             )
 
             sub20Women.append(sub20Woman)
@@ -336,7 +351,7 @@ class Sub17Man():
 
         sub17Men = []
 
-        sub17MenHTML = requests.get(event.url + "results/sub17men/").text
+        sub17MenHTML = session.get(event.url + "results/sub17men/").text
 
         sub17MenSoup = BeautifulSoup(sub17MenHTML, "html.parser")
         sub17MenRows = sub17MenSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
@@ -347,10 +362,10 @@ class Sub17Man():
 
             sub17Man = Sub17Man(
                 _rank=rowData[0].text,
-                _parkRunner=rowData[1].find("a").text,
-                _numberOfRuns=rowData[2].text,
-                _fastestTime=rowData[3].text,
-                _club=rowData[4].find("a").text,
+                _parkRunner=rowData[1].find("a").text if rowData[1].find("a") else None,
+                _numberOfRuns=rowData[2].text if rowData[2] else None,
+                _fastestTime=rowData[3].text if rowData[3] else None,
+                _club=rowData[4].find("a").text if rowData[4].find("a") else None,
             )
 
             sub17Men.append(sub17Man)
@@ -376,7 +391,7 @@ class AgeGradedLeagueRank():
 
         for i in range(1, resultSet+1):
 
-            ageGradedLeagueRanksHTML = requests.get(event.url + f"results/agegradedleague/?resultSet={resultSet}").text
+            ageGradedLeagueRanksHTML = session.get(event.url + f"results/agegradedleague/?resultSet={resultSet}").text
 
             ageGradedLeagueRanksSoup = BeautifulSoup(ageGradedLeagueRanksHTML, "html.parser")
             ageGradedLeagueRanksRows = ageGradedLeagueRanksSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
@@ -386,9 +401,9 @@ class AgeGradedLeagueRank():
                 rowData = ageGradedLeagueRanksRow.findAll("td")
 
                 ageGradedLeagueRank = AgeGradedLeagueRank(
-                    _rank=rowData[0].text,
-                    _parkRunner=rowData[1].find("a").text,
-                    _ageGrade=rowData[2].text
+                    _rank=rowData[0].text if rowData[0] else None,
+                    _parkRunner=rowData[1].find("a").text if rowData[1].find("a") else None,
+                    _ageGrade=rowData[2].text if rowData[2] else None
                 )
 
                 ageGradedLeagueRanks.append(ageGradedLeagueRank)
@@ -413,7 +428,7 @@ class Fastest():
 
         fastest500 = []
 
-        fastest500HTML = requests.get(event.url + "results/fastest500/").text
+        fastest500HTML = session.get(event.url + "results/fastest500/").text
 
         fastest500Soup = BeautifulSoup(fastest500HTML, "html.parser")
         fastest500Rows = fastest500Soup.find("table", {"id": "results"}).find("tbody").findAll("tr")
@@ -423,17 +438,33 @@ class Fastest():
             rowData = fastest500Row.findAll("td")
 
             fastest = Fastest(
-                _rank=rowData[0].text,
-                _parkRunner=rowData[1].find("a").text,
-                _numberOfRuns=rowData[2].text,
-                _sex=rowData[3].text,
-                _fastestTime=rowData[4].text,
-                _club=rowData[5].find("a").text,
+                _rank=rowData[0].text if rowData[0] else None,
+                _parkRunner=rowData[1].find("a").text if rowData[1].find("a") else None,
+                _numberOfRuns=rowData[2].text if rowData[2] else None,
+                _sex=rowData[3].text if rowData[3] else None,
+                _fastestTime=rowData[4].text if rowData[4] else None,
+                _club=rowData[5].find("a").text if rowData[5].find("a") else None,
             )
 
             fastest500.append(fastest)
 
         return fastest500
 
-#Country.GetAllCountries()
-#Event.GetAllEvents()
+
+def ExampleUsage():
+
+    countries = Country.GetAllCountries()
+    events = Event.GetAllEvents()
+    Event.UpdateEventUrls(events, countries)
+
+    selectedEvent = events[0]
+
+    eventHistory = EventHistory.GetEventHistorys(selectedEvent)
+    firstFinishers = FirstFinisher.GetFirstFinishers(selectedEvent)
+    AgeCategoryRecords = AgeCategoryRecord.GetAgeCategoryRecords(selectedEvent)
+    clubs = Club.GetClubs(selectedEvent)
+    sub20Women = Sub20Woman.GetSub20Women(selectedEvent)
+    sub17Men = Sub17Man.GetSub17Men(selectedEvent)
+    ageGradedLeagueRanks = AgeGradedLeagueRank.GetAgeGradedLeagueRanks(selectedEvent)
+    fastest500 = Fastest.GetFastest500(selectedEvent)
+    print("Done")
