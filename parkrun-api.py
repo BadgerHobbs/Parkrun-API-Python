@@ -1065,7 +1065,8 @@ class HistoricNumber:
             historicNumbers.append(historicNumber)
 
         return historicNumbers
-    
+
+  
 def ExampleUsage():
 
     countries = Country.GetAllCountries()
