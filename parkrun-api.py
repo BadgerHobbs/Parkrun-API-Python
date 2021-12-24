@@ -37,7 +37,7 @@ class Country:
 
             country = Country(
                 _id=countryKey, 
-                _url=countriesJson[countryKey]["url"]
+                _url="https://" + countriesJson[countryKey]["url"]
                 )
 
             countries.append(country)
@@ -91,7 +91,7 @@ class Event:
 
                 if str(event.countryCode) == str(country.id):
 
-                    event.url = "https://" + f"{country.url}/{event.name}/".replace("//", "/")
+                    event.url = f"{country.url}/{event.name}/".replace("//", "/")
 
         return events
 
@@ -450,7 +450,464 @@ class Fastest():
 
         return fastest500
 
+class WeekFirstFinisher:
 
+    def __init__(self, _event=None, _maleParkRunner=None, _maleClub=None, _femaleParkRunner=None, _femaleClub=None):
+
+        self.event = _event
+        self.maleParkRunner = _maleParkRunner
+        self.maleClub = _maleClub
+        self.femaleParkRunner = _femaleParkRunner
+        self.femaleClub = _femaleClub
+
+        pass
+
+    @staticmethod
+    def GetWeekFirstFinishersForCountry(country):
+
+        weekFirstFinishers = []
+
+        weekFirstFinisherHTML = session.get(country.url + "/results/firstfinishers/").text
+
+        weekFirstFinisherSoup = BeautifulSoup(weekFirstFinisherHTML, "html.parser")
+        weekFirstFinisherRows = weekFirstFinisherSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for weekFirstFinisherRow in weekFirstFinisherRows:
+
+            rowData = weekFirstFinisherRow.findAll("td")
+
+            weekFirstFinisher = WeekFirstFinisher(
+                _event=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _maleParkRunner=rowData[2].find("a").text if rowData[2].find("a") else None,
+                _maleClub=rowData[3].find("a").text if rowData[3].find("a") else None,
+                _femaleParkRunner=rowData[5].find("a").text if rowData[5].find("a") else None,
+                _femaleClub=rowData[6].find("a").text if rowData[6].find("a") else None,
+            )
+
+            weekFirstFinishers.append(weekFirstFinisher)
+
+        return weekFirstFinishers
+
+class WeekSub17Run:
+
+    def __init__(self, _event=None, _parkRunner=None, _time=None, _club=None):
+
+        self.event = _event
+        self.parkRunner = _parkRunner
+        self.time = _time
+        self.club = _club
+
+        pass
+
+    @staticmethod
+    def GetWeekSub17RunsForCountry(country):
+
+        weekSub17Runs = []
+
+        weekSub17RunHTML = session.get(country.url + "/results/sub17/").text
+
+        weekSub17RunSoup = BeautifulSoup(weekSub17RunHTML, "html.parser")
+        weekSub17RunRows = weekSub17RunSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for weekSub17RunRow in weekSub17RunRows:
+
+            rowData = weekSub17RunRow.findAll("td")
+
+            weekSub17Run = WeekSub17Run(
+                _event=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _parkRunner=rowData[2].find("a").text if rowData[2].find("a") else None,
+                _time=rowData[3].text if rowData[3] else None,
+                _club=rowData[4].find("a").text if rowData[4].find("a") else None,
+            )
+
+            weekSub17Runs.append(weekSub17Run)
+
+        return weekSub17Runs
+
+class WeekTopAgeGrade:
+
+    def __init__(self, _event=None, _parkRunner=None, _time=None, _ageGroup=None, _ageGrade=None, _club=None):
+
+        self.event = _event
+        self.parkRunner = _parkRunner
+        self.time = _time
+        self.ageGroup = _ageGroup
+        self.ageGrade = _ageGrade
+        self.club = _club
+
+        pass
+
+    @staticmethod
+    def GetWeekTopAgeGradesForCountry(country):
+
+        weekTopAgeGrades = []
+
+        weekTopAgeGradeHTML = session.get(country.url + "/results/topagegrade/").text
+
+        weekTopAgeGradeSoup = BeautifulSoup(weekTopAgeGradeHTML, "html.parser")
+        weekTopAgeGradeRows = weekTopAgeGradeSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for weekTopAgeGradeRow in weekTopAgeGradeRows:
+
+            rowData = weekTopAgeGradeRow.findAll("td")
+
+            weekTopAgeGrade = WeekTopAgeGrade(
+                _event=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _parkRunner=rowData[2].find("a").text if rowData[2].find("a") else None,
+                _time=rowData[3].text if rowData[3] else None,
+                _ageGroup=rowData[4].text if rowData[4] else None,
+                _ageGrade=rowData[5].text if rowData[5] else None,
+                _club=rowData[6].find("a").text if rowData[6].find("a") else None,
+            )
+
+            weekTopAgeGrades.append(weekTopAgeGrade)
+
+        return weekTopAgeGrades
+
+class WeekNewCategoryRecord:
+
+    def __init__(self, _event=None, _parkRunner=None, _time=None, _ageGroup=None, _ageGrade=None, _club=None):
+
+        self.event = _event
+        self.parkRunner = _parkRunner
+        self.time = _time
+        self.ageGroup = _ageGroup
+        self.ageGrade = _ageGrade
+        self.club = _club
+
+        pass
+
+    @staticmethod
+    def GetWeekNewCategoryRecordsForCountry(country):
+
+        weekNewCategoryRecords = []
+
+        weekNewCategoryRecordHTML = session.get(country.url + "/results/newcategoryrecords/").text
+
+        weekNewCategoryRecordSoup = BeautifulSoup(weekNewCategoryRecordHTML, "html.parser")
+        weekNewCategoryRecordRows = weekNewCategoryRecordSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for weekNewCategoryRecordRow in weekNewCategoryRecordRows:
+
+            rowData = weekNewCategoryRecordRow.findAll("td")
+
+            weekNewCategoryRecord = WeekNewCategoryRecord(
+                _event=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _parkRunner=rowData[2].find("a").text if rowData[2].find("a") else None,
+                _time=rowData[3].text if rowData[3] else None,
+                _ageGroup=rowData[4].text if rowData[4] else None,
+                _ageGrade=rowData[5].text if rowData[5] else None,
+                _club=rowData[6].find("a").text if rowData[6].find("a") else None
+            )
+
+            weekNewCategoryRecords.append(weekNewCategoryRecord)
+
+        return weekNewCategoryRecords
+
+class CourseRecord:
+
+    def __init__(self, _event=None, _femaleParkRunner=None, _femaleTime=None, _femaleDate=None, _maleParkRunner=None, _maleTime=None, _maleDate=None):
+
+        self.event = _event
+        self.femaleParkRunner = _femaleParkRunner
+        self.femaleTime = _femaleTime
+        self.femaleDate = _femaleDate
+        self.maleParkRunner = _maleParkRunner
+        self.maleTime = _maleTime
+        self.maleDate = _maleDate
+
+        pass
+
+    @staticmethod
+    def GetCourseRecordsForCountry(country):
+
+        courseRecords = []
+
+        courseRecordHTML = session.get(country.url + "/results/courserecords/").text
+
+        courseRecordSoup = BeautifulSoup(courseRecordHTML, "html.parser")
+        courseRecordRows = courseRecordSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for courseRecordRow in courseRecordRows:
+
+            rowData = courseRecordRow.findAll("td")
+
+            courseRecord = CourseRecord(
+                _event=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _femaleParkRunner=rowData[2].find("a").text if rowData[2].find("a") else None,
+                _femaleTime=rowData[3].text if rowData[3] else None,
+                _femaleDate=rowData[4].text if rowData[4] else None,
+                _maleParkRunner=rowData[6].find("a").text if rowData[6].find("a") else None,
+                _maleTime=rowData[7].text if rowData[7] else None,
+                _maleDate=rowData[8].text if rowData[8] else None,
+            )
+
+            courseRecords.append(courseRecord)
+
+        return courseRecords
+
+class AttendanceRecord:
+
+    def __init__(self, _event=None, _attendance=None, _week=None, _thisWeek=None):
+
+        self.event = _event
+        self.attendance = _attendance
+        self.week = _week
+        self.thisWeek = _thisWeek
+
+        pass
+
+    @staticmethod
+    def GetAttendanceRecordsForCountry(country):
+
+        attendanceRecords = []
+
+        attendanceRecordHTML = session.get(country.url + "/results/attendancerecords/").text
+
+        attendanceRecordSoup = BeautifulSoup(attendanceRecordHTML, "html.parser")
+        attendanceRecordRows = attendanceRecordSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for attendanceRecordRow in attendanceRecordRows:
+
+            rowData = attendanceRecordRow.findAll("td")
+
+            attendanceRecord = AttendanceRecord(
+                _event=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _attendance=rowData[2].text if rowData[2] else None,
+                _week=rowData[3].text if rowData[3] else None,
+                _thisWeek=rowData[4].text if rowData[4] else None,
+            )
+
+            attendanceRecords.append(attendanceRecord)
+
+        return attendanceRecords
+
+class MostEvent:
+
+    def __init__(self, _parkRunner=None, _events=None, _totalParkRuns=None, _totalParkRunsWorldwide=None):
+
+        self.parkRunner = _parkRunner
+        self.events = _events
+        self.totalParkRuns = _totalParkRuns
+        self.totalParkRunsWorldwide = _totalParkRunsWorldwide
+
+        pass
+
+    @staticmethod
+    def GetMostEventsForCountry(country):
+
+        mostEvents = []
+
+        mostEventHTML = session.get(country.url + "/results/mostevents/").text
+
+        mostEventSoup = BeautifulSoup(mostEventHTML, "html.parser")
+        mostEventRows = mostEventSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for mostEventRow in mostEventRows:
+
+            rowData = mostEventRow.findAll("td")
+
+            mostEvent = MostEvent(
+                _parkRunner=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _events=rowData[3].text if rowData[3] else None,
+                _totalParkRuns=rowData[4].text if rowData[4] else None,
+                _totalParkRunsWorldwide=rowData[5].text if rowData[5] else None,
+            )
+
+            mostEvents.append(mostEvent)
+
+        return mostEvents
+
+class LargestClub:
+
+    def __init__(self, _club=None, _numberOfParkRunners=None, _numberOfRuns=None, _clubHomePage=None):
+
+        self.club = _club
+        self.numberOfParkRunners = _numberOfParkRunners
+        self.numberOfRuns = _numberOfRuns
+        self.clubHomePage = _clubHomePage
+
+        pass
+
+    @staticmethod
+    def GetLargestClubsForCountry(country):
+
+        largestClubs = []
+
+        largestClubHTML = session.get(country.url + "/results/largestclubs/").text
+
+        largestClubSoup = BeautifulSoup(largestClubHTML, "html.parser")
+        largestClubRows = largestClubSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for largestClubRow in largestClubRows:
+
+            rowData = largestClubRow.findAll("td")
+
+            largestClub = LargestClub(
+                _club=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _numberOfParkRunners=rowData[2].text if rowData[2] else None,
+                _numberOfRuns=rowData[3].text if rowData[3] else None,
+                _clubHomePage=rowData[4].find("a")["href"] if rowData[4].find("a") else None,
+            )
+
+            largestClubs.append(largestClub)
+
+        return largestClubs
+
+class Joined100Club:
+
+    def __init__(self, _parkRunner=None, _numberOfRuns=None):
+
+        self.parkRunner = _parkRunner
+        self.numberOfRuns = _numberOfRuns
+
+        pass
+
+    @staticmethod
+    def GetJoined100ClubsForCountry(country):
+
+        joined100Clubs = []
+
+        joined100ClubHTML = session.get(country.url + "/results/joined100clubs/").text
+
+        joined100ClubSoup = BeautifulSoup(joined100ClubHTML, "html.parser")
+        joined100ClubRows = joined100ClubSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for joined100ClubRow in joined100ClubRows:
+
+            rowData = joined100ClubRow.findAll("td")
+
+            joined100Club = Joined100Club(
+                _parkRunner=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _numberOfRuns="100" if rowData[1].find("img") else rowData[1].text,
+            )
+
+            joined100Clubs.append(joined100Club)
+
+        return joined100Clubs
+
+class MostFirstFinish:
+
+    def __init__(self, _parkRunner=None, _numberOfRuns=None):
+
+        self.parkRunner = _parkRunner
+        self.numberOfRuns = _numberOfRuns
+
+        pass
+
+    @staticmethod
+    def GetMostFirstFinishesForCountry(country):
+
+        mostFirstFinishes = []
+
+        mostFirstFinishHTML = session.get(country.url + "/results/mostfirstfinishes/").text
+
+        mostFirstFinishSoup = BeautifulSoup(mostFirstFinishHTML, "html.parser")
+        mostFirstFinishRows = mostFirstFinishSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for mostFirstFinishRow in mostFirstFinishRows:
+
+            rowData = mostFirstFinishRow.findAll("td")
+
+            mostFirstFinish = MostFirstFinish(
+                _parkRunner=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _numberOfRuns=rowData[1].text if rowData[1] else None,
+            )
+
+            mostFirstFinishes.append(mostFirstFinish)
+
+        return mostFirstFinishes
+
+class FreedomRun:
+
+    def __init__(self, _parkRunner=None, _date=None, _location=None, _runTime=None):
+
+        self.parkRunner = _parkRunner
+        self.date = _date
+        self.location = _location
+        self.runTime = _runTime
+
+        pass
+
+    @staticmethod
+    def GetFreedomRunsForCountry(country):
+
+        freedomRuns = []
+
+        freedomRunHTML = session.get(country.url + "/results/freedom/").text
+
+        freedomRunSoup = BeautifulSoup(freedomRunHTML, "html.parser")
+        freedomRunRows = freedomRunSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for freedomRunRow in freedomRunRows:
+
+            rowData = freedomRunRow.findAll("td")
+
+            freedomRun = FreedomRun(
+                _parkRunner=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _date=rowData[1].text if rowData[1] else None,
+                _location=rowData[2].text if rowData[2] else None,
+                _runTime=rowData[3].text if rowData[3] else None,
+            )
+
+            freedomRuns.append(freedomRun)
+
+        return freedomRuns
+
+class HistoricNumber:
+
+    def __init__(self, _date=None, _events=None, _athletes=None, _volunteers=None):
+
+        self.date = _date
+        self.events = _events
+        self.athletes = _athletes
+        self.volunteers = _volunteers
+
+        pass
+
+    @staticmethod
+    def GetHistoricNumbersForCountry(country=None):
+
+        historicNumbers = []
+        historicNumberHTML = None
+
+        if country:
+
+            historicNumberHTML = session.get("https://results-service.parkrun.com/resultsSystem/App/globalChartNumRunnersAndEvents.php?CountryNum=" + country.id).text
+
+        else:
+
+            historicNumberHTML = session.get("https://results-service.parkrun.com/resultsSystem/App/globalChartNumRunnersAndEvents.php").text
+
+        searchString = "data.addRows(["
+        contentStartIndex = historicNumberHTML.find(searchString) + len(searchString)
+        contentEndIndex = historicNumberHTML.find("]);", contentStartIndex)
+        contentString = historicNumberHTML[contentStartIndex:contentEndIndex].replace("\n","").replace("\r","").replace("\t","").replace(" ","")
+
+        contentList = contentString.split("],")
+
+        for contentRow in contentList:
+
+            if contentRow.strip() == "":
+
+                continue
+
+            splitContentRow = contentRow.split(",")
+            dateStart = splitContentRow[0].find("(")
+            dateEnd = splitContentRow[0].find(")")
+            date = splitContentRow[0][dateStart + 1:dateEnd]
+
+            historicNumber = HistoricNumber(
+                _date=date,
+                _events=splitContentRow[1],
+                _athletes=splitContentRow[2],
+                _volunteers=splitContentRow[3],
+            )
+
+            historicNumbers.append(historicNumber)
+
+        return historicNumbers
+    
 def ExampleUsage():
 
     countries = Country.GetAllCountries()
@@ -467,4 +924,18 @@ def ExampleUsage():
     sub17Men = Sub17Man.GetSub17Men(selectedEvent)
     ageGradedLeagueRanks = AgeGradedLeagueRank.GetAgeGradedLeagueRanks(selectedEvent)
     fastest500 = Fastest.GetFastest500(selectedEvent)
+
+    weekFirstFinishers = WeekFirstFinisher.GetWeekFirstFinishersForCountry(countries[0])
+    weekSub17Runs = WeekSub17Run.GetWeekSub17RunsForCountry(countries[0])
+    weekTopAgeGrades = WeekTopAgeGrade.GetWeekTopAgeGradesForCountry(countries[0])
+    weekNewCategoryRecords = WeekNewCategoryRecord.GetWeekNewCategoryRecordsForCountry(countries[0])
+    courseRecords = CourseRecord.GetCourseRecordsForCountry(countries[0])
+    attendanceRecords = AttendanceRecord.GetAttendanceRecordsForCountry(countries[0])
+    mostEvents = MostEvent.GetMostEventsForCountry(countries[0])
+    largestClubs = LargestClub.GetLargestClubsForCountry(countries[0])
+    joined100Clubs = Joined100Club.GetJoined100ClubsForCountry(countries[0])
+    mostFirstFinishes = MostFirstFinish.GetMostFirstFinishesForCountry(countries[0])
+    freedomRuns = FreedomRun.GetFreedomRunsForCountry(countries[0])
+    historicNumbers = HistoricNumber.GetHistoricNumbersForCountry()
+
     print("Done")
