@@ -296,6 +296,31 @@ class Club():
 
         return clubs
 
+    @staticmethod
+    def GetLargestClubsGlobally():
+
+        clubs = []
+
+        clubsHTML = session.get("https://www.parkrun.com/results/largestclubs/").text
+
+        clubsSoup = BeautifulSoup(clubsHTML, "html.parser")
+        clubRows = clubsSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+        
+        for clubRow in clubRows:
+
+            rowData = clubRow.findAll("td")
+
+            club = Club(
+                _name=rowData[0].text if rowData[0] else None,
+                _numberOfParkrunners=rowData[1].text if rowData[1] else None,
+                _numberOfRuns=rowData[2].text if rowData[2] else None,
+                _clubHomePage=rowData[3].find("a")["href"] if rowData[3].find("a") else None,
+            )
+
+            clubs.append(club)
+
+        return clubs
+
 class Sub20Woman():
 
     def __init__(self, _rank=None, _parkRunner=None, _numberOfRuns=None, _fastestTime=None, _club=None):
@@ -815,6 +840,31 @@ class AttendanceRecord:
 
         return attendanceRecords
 
+    @staticmethod
+    def GetAttendanceRecordsGlobally():
+
+        attendanceRecords = []
+
+        attendanceRecordHTML = session.get("https://www.parkrun.com/results/attendancerecords/").text
+
+        attendanceRecordSoup = BeautifulSoup(attendanceRecordHTML, "html.parser")
+        attendanceRecordRows = attendanceRecordSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for attendanceRecordRow in attendanceRecordRows:
+
+            rowData = attendanceRecordRow.findAll("td")
+
+            attendanceRecord = AttendanceRecord(
+                _event=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _attendance=rowData[1].text if rowData[1] else None,
+                _week=rowData[2].text if rowData[2] else None,
+                _thisWeek=rowData[3].text if rowData[3] else None,
+            )
+
+            attendanceRecords.append(attendanceRecord)
+
+        return attendanceRecords
+
 class MostEvent:
 
     def __init__(self, _parkRunner=None, _events=None, _totalParkRuns=None, _totalParkRunsWorldwide=None):
@@ -845,6 +895,30 @@ class MostEvent:
                 _events=rowData[3].text if rowData[3] else None,
                 _totalParkRuns=rowData[4].text if rowData[4] else None,
                 _totalParkRunsWorldwide=rowData[5].text if rowData[5] else None,
+            )
+
+            mostEvents.append(mostEvent)
+
+        return mostEvents
+
+    @staticmethod
+    def GetMostEventsGlobally():
+
+        mostEvents = []
+
+        mostEventHTML = session.get("https://www.parkrun.com/results/mostevents/").text
+
+        mostEventSoup = BeautifulSoup(mostEventHTML, "html.parser")
+        mostEventRows = mostEventSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for mostEventRow in mostEventRows:
+
+            rowData = mostEventRow.findAll("td")
+
+            mostEvent = MostEvent(
+                _parkRunner=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _events=rowData[2].text if rowData[2] else None,
+                _totalParkRuns=rowData[3].text if rowData[3] else None,
             )
 
             mostEvents.append(mostEvent)
@@ -934,6 +1008,29 @@ class MostFirstFinish:
         mostFirstFinishes = []
 
         mostFirstFinishHTML = session.get(country.url + "/results/mostfirstfinishes/").text
+
+        mostFirstFinishSoup = BeautifulSoup(mostFirstFinishHTML, "html.parser")
+        mostFirstFinishRows = mostFirstFinishSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
+
+        for mostFirstFinishRow in mostFirstFinishRows:
+
+            rowData = mostFirstFinishRow.findAll("td")
+
+            mostFirstFinish = MostFirstFinish(
+                _parkRunner=rowData[0].find("a").text if rowData[0].find("a") else None,
+                _numberOfRuns=rowData[1].text if rowData[1] else None,
+            )
+
+            mostFirstFinishes.append(mostFirstFinish)
+
+        return mostFirstFinishes
+
+    @staticmethod
+    def GetMostFirstFinishesGlobally():
+
+        mostFirstFinishes = []
+
+        mostFirstFinishHTML = session.get("https://www.parkrun.com/results/mostfirstfinishes/").text
 
         mostFirstFinishSoup = BeautifulSoup(mostFirstFinishHTML, "html.parser")
         mostFirstFinishRows = mostFirstFinishSoup.find("table", {"id": "results"}).find("tbody").findAll("tr")
@@ -1066,15 +1163,17 @@ class HistoricNumber:
 
         return historicNumbers
 
-  
+
 def ExampleUsage():
 
+    # General Setup Data
     countries = Country.GetAllCountries()
     events = Event.GetAllEvents()
     Event.UpdateEventUrls(events, countries)
 
     selectedEvent = events[0]
 
+    # Event Specific Data
     eventHistory = EventHistory.GetEventHistorys(selectedEvent)
     firstFinishers = FirstFinisher.GetFirstFinishers(selectedEvent)
     AgeCategoryRecords = AgeCategoryRecord.GetAgeCategoryRecords(selectedEvent)
@@ -1084,6 +1183,7 @@ def ExampleUsage():
     ageGradedLeagueRanks = AgeGradedLeagueRank.GetAgeGradedLeagueRanks(selectedEvent)
     fastest500 = Fastest.GetFastest500(selectedEvent)
 
+    # Country Specific Data
     weekFirstFinishers = WeekFirstFinisher.GetWeekFirstFinishersForCountry(countries[0])
     weekSub17Runs = WeekSub17Run.GetWeekSub17RunsForCountry(countries[0])
     weekTopAgeGrades = WeekTopAgeGrade.GetWeekTopAgeGradesForCountry(countries[0])
@@ -1097,11 +1197,18 @@ def ExampleUsage():
     freedomRuns = FreedomRun.GetFreedomRunsForCountry(countries[0])
     historicNumbers = HistoricNumber.GetHistoricNumbersForCountry()
 
+    # Global Results Data
     globalWeekFirstFinishers = WeekFirstFinisher.GetWeekFirstFinishersGlobally()
     globalNewCategoryRecords = WeekNewCategoryRecord.GetWeekNewCategoryRecordsGlobally()
     globalSub17Runs = WeekSub17Run.GetWeekSub17RunsGlobally()
     globalTopAgeGrades = WeekTopAgeGrade.GetWeekTopAgeGradesGlobally()
     globalCourseRecords = CourseRecord.GetCourseRecordsGlobally()
     globalFreedomRuns = FreedomRun.GetFreedomRunsGlobally()
+
+    # Global Stats Data
+    globalLargestClubs = Club.GetLargestClubsGlobally()
+    globalAttendanceRecords = AttendanceRecord.GetAttendanceRecordsGlobally()
+    globalMostEvents = MostEvent.GetMostEventsGlobally()
+    globalMostFirstFinishes = MostFirstFinish.GetMostFirstFinishesGlobally()
 
     print("Done")

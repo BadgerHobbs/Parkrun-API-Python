@@ -5,12 +5,14 @@ Python API for Parkrun data
 ```python
 def ExampleUsage():
 
+    # General Setup Data
     countries = Country.GetAllCountries()
     events = Event.GetAllEvents()
     Event.UpdateEventUrls(events, countries)
 
     selectedEvent = events[0]
 
+    # Event Specific Data
     eventHistory = EventHistory.GetEventHistorys(selectedEvent)
     firstFinishers = FirstFinisher.GetFirstFinishers(selectedEvent)
     AgeCategoryRecords = AgeCategoryRecord.GetAgeCategoryRecords(selectedEvent)
@@ -20,6 +22,7 @@ def ExampleUsage():
     ageGradedLeagueRanks = AgeGradedLeagueRank.GetAgeGradedLeagueRanks(selectedEvent)
     fastest500 = Fastest.GetFastest500(selectedEvent)
 
+    # Country Specific Data
     weekFirstFinishers = WeekFirstFinisher.GetWeekFirstFinishersForCountry(countries[0])
     weekSub17Runs = WeekSub17Run.GetWeekSub17RunsForCountry(countries[0])
     weekTopAgeGrades = WeekTopAgeGrade.GetWeekTopAgeGradesForCountry(countries[0])
@@ -33,12 +36,19 @@ def ExampleUsage():
     freedomRuns = FreedomRun.GetFreedomRunsForCountry(countries[0])
     historicNumbers = HistoricNumber.GetHistoricNumbersForCountry()
 
+    # Global Results Data
     globalWeekFirstFinishers = WeekFirstFinisher.GetWeekFirstFinishersGlobally()
     globalNewCategoryRecords = WeekNewCategoryRecord.GetWeekNewCategoryRecordsGlobally()
     globalSub17Runs = WeekSub17Run.GetWeekSub17RunsGlobally()
     globalTopAgeGrades = WeekTopAgeGrade.GetWeekTopAgeGradesGlobally()
     globalCourseRecords = CourseRecord.GetCourseRecordsGlobally()
     globalFreedomRuns = FreedomRun.GetFreedomRunsGlobally()
+
+    # Global Stats Data
+    globalLargestClubs = Club.GetLargestClubsGlobally()
+    globalAttendanceRecords = AttendanceRecord.GetAttendanceRecordsGlobally()
+    globalMostEvents = MostEvent.GetMostEventsGlobally()
+    globalMostFirstFinishes = MostFirstFinish.GetMostFirstFinishesGlobally()
 
     print("Done")
 ```
