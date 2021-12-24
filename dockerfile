@@ -7,6 +7,7 @@ WORKDIR /app
 RUN pip3 install flask && \
     pip3 install Flask-Limiter && \
     pip3 install requests && \
+    pip3 install beautifulsoup4 && \
     pip3 install gunicorn && \
     pip3 install gevent
     
