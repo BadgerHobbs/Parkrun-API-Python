@@ -1,8 +1,17 @@
 # Parkrun-API-Python
 Python API for Parkrun data
 
+## Python Requirements
+```python
+pip install requests
+pip install beautifulsoup4
+```
 ## Example Usage
 ```python
+import requests
+from bs4 import BeautifulSoup
+import math
+
 def ExampleUsage():
 
     # General Setup Data
@@ -51,4 +60,6 @@ def ExampleUsage():
     globalMostFirstFinishes = MostFirstFinish.GetMostFirstFinishesGlobally()
 
     print("Done")
+
+ExampleUsage()
 ```
