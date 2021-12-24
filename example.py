@@ -1,13 +1,3 @@
-# Parkrun-API-Python
-Python API for Parkrun data
-
-## Python Requirements
-```python
-pip install requests
-pip install beautifulsoup4
-```
-## Example Usage (see also example.py)
-```python
 import parkrun_api as parkrun
 
 def ExampleUsage():
@@ -60,4 +50,3 @@ def ExampleUsage():
     print("Done")
 
 ExampleUsage()
-```
