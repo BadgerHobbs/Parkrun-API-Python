@@ -1,0 +1,63 @@
+{
+    "BaseUrl": "",
+    "ApiGroups": [
+        {
+            "GroupName": "General",
+            "APIs": [
+                { "Tag": "cache", "Type": "GET", "Route": "/v1/cache" }
+            ]
+        },
+        {
+            "GroupName": "Events",
+            "APIs": [
+                { "Tag": "events", "Type": "GET", "Route": "/v1/events" },
+                { "Tag": "history", "Type": "GET", "Route": "/v1/events/701/history" },
+                { "Tag": "first finishers", "Type": "GET", "Route": "/v1/events/701/first-finishers" },
+                { "Tag": "age category records", "Type": "GET", "Route": "/v1/events/701/age-category-records" },
+                { "Tag": "clubs", "Type": "GET", "Route": "/v1/events/701/clubs" },
+                { "Tag": "sub 20 women", "Type": "GET", "Route": "/v1/events/701/sub-20-women" },
+                { "Tag": "sub 17 men", "Type": "GET", "Route": "/v1/events/701/sub-17-men" },
+                { "Tag": "age graded league ranks", "Type": "GET", "Route": "/v1/events/701/age-graded-league-ranks" },
+                { "Tag": "fastest 500", "Type": "GET", "Route": "/v1/events/701/fastest-500" }
+            ]
+        },
+        {
+            "GroupName": "Countries",
+            "APIs": [
+                { "Tag": "countries", "Type": "GET", "Route": "/v1/countries" },
+                { "Tag": "week first finishers", "Type": "GET", "Route": "/v1/countries/3/week-first-finishers" },
+                { "Tag": "week sub 17 runs", "Type": "GET", "Route": "/v1/countries/3/week-sub-17-runs" },
+                { "Tag": "week top age grades", "Type": "GET", "Route": "/v1/countries/3/week-top-age-grades" },
+                { "Tag": "week new category records", "Type": "GET", "Route": "/v1/countries/3/week-new-category-records" },
+                { "Tag": "course records", "Type": "GET", "Route": "/v1/countries/3/course-records" },
+                { "Tag": "attendance records", "Type": "GET", "Route": "/v1/countries/3/attendance-records" },
+                { "Tag": "most events", "Type": "GET", "Route": "/v1/countries/3/most-events" },
+                { "Tag": "largest clubs", "Type": "GET", "Route": "/v1/countries/3/largest-clubs" },
+                { "Tag": "joined 100 club", "Type": "GET", "Route": "/v1/countries/3/joined-100-club" },
+                { "Tag": "most first finishes", "Type": "GET", "Route": "/v1/countries/3/most-first-finishes" },
+                { "Tag": "freedom runs", "Type": "GET", "Route": "/v1/countries/3/freedom-runs" },
+                { "Tag": "historic numbers", "Type": "GET", "Route": "/v1/countries/3/historic-numbers" }
+            ]
+        },
+        {
+            "GroupName": "Global Results",
+            "APIs": [
+                { "Tag": "week first finishers", "Type": "GET", "Route": "/v1/global/results/week-first-finishers" },
+                { "Tag": "new category records", "Type": "GET", "Route": "/v1/global/results/new-category-records" },
+                { "Tag": "sub 17 runs", "Type": "GET", "Route": "/v1/global/results/sub-17-runs" },
+                { "Tag": "top age grades", "Type": "GET", "Route": "/v1/global/results/top-age-grades" },
+                { "Tag": "course records", "Type": "GET", "Route": "/v1/global/results/course-records" },
+                { "Tag": "freedom runs", "Type": "GET", "Route": "/v1/global/results/freedom-runs" }
+            ]
+        },
+        {
+            "GroupName": "Global Stats",
+            "APIs": [
+                { "Tag": "largest clubs", "Type": "GET", "Route": "/v1/global/stats/largest-clubs" },
+                { "Tag": "attendance records", "Type": "GET", "Route": "/v1/global/stats/attendance-records" },
+                { "Tag": "most events", "Type": "GET", "Route": "/v1/global/stats/most-events" },
+                { "Tag": "most first finishes", "Type": "GET", "Route": "/v1/global/stats/most-first-finishes" }
+            ]
+        }
+    ] 
+}

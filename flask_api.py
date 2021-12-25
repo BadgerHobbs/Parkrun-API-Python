@@ -1,4 +1,4 @@
-from flask import Flask, redirect, request
+from flask import Flask, redirect, request, render_template
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
@@ -84,12 +84,23 @@ def GithubRedirect():
 
     return redirect("https://github.com/BadgerHobbs/Parkrun-API-Python", code=302)
 
+@app.route("/docs")
+def SimpleAPIViewerDocs():
+
+    return render_template('index.html')
+
 @app.route("/v1/cache")
 def GetCache():
     global cache
     
-    global cache
     return json.dumps(CacheToDict())
+
+@app.route("/v1/clear-cache")
+def ClearCache():
+    global cache
+    
+    cache = {}
+    return json.dumps(CacheToDict()) 
 
 @app.route("/v1/countries")
 def GetCountries():
@@ -390,4 +401,4 @@ def GetMostFirstFinishesGlobally():
 
 if __name__ == '__main__':
 
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)

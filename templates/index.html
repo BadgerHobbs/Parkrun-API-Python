@@ -1,0 +1,235 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+
+        <title>Parkrun-API Docs</title>
+        <meta charset="utf-8" />
+        
+        <style>
+
+        body {
+            display: flex;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .content {
+            height: 100%;
+            width: 60em;
+            padding-left: 5em;
+            padding-right: 5em;
+            margin-bottom: 10em;
+        }
+
+        .heading {
+            float: left;
+            width: 100%;
+        }
+
+        .apiGroups {
+            float: left;
+            width: 25em;
+        }
+
+        .apiGroup {
+            float: left;
+            width: 25em;
+            display: grid;
+            margin-bottom: 0.5em;
+        }
+
+        .apiGroupHeading {
+            font-size: 1.25em;
+            margin-bottom: 0.25em;
+        }
+
+        .apiDataLine {
+            display: inline-flex;
+            column-gap: 0.25rem;
+            align-items: center;
+            margin-bottom: 0.15em;
+        }
+
+        .apiDataTag {
+            text-decoration: underline;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        
+        .apiDataType {
+            font-size: 0.75em;
+            color: darkgray;
+        }
+
+        .apiDataRoute {
+            font-size: 0.75em;
+            color: darkgray;
+        }
+
+        .viewerGroup {
+            float: right;
+            width: 35em;
+        }
+        
+        .inputGroup {
+            align-items: center;
+        }
+
+        .jsonViewer {
+            height: 40em;
+            border: 1px solid black;
+            margin-top: 2em;
+            overflow: auto;
+            padding-top: 0.5em;
+            padding-left: 0.5em;
+        }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="content">
+
+            <h1 class="heading">Parkrun-API Docs</h1>
+
+            <hr>
+
+            <div style="display: inline-block;">
+
+                <div id="apiGroups" class="apiGroups">
+    
+                </div>
+
+                <div class="viewerGroup">
+
+                    <div class="inputGroup">
+
+                        <input id="requestType" type="text" style="width: 6.5em; float: left;">
+                        <input id="requestRoute" type="text" style="width: 35em; float: right;">
+                        
+                    </div>
+
+                    <pre class="jsonViewer" contenteditable="true"></pre>
+    
+                </div>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    <script>
+
+        const configPath = "/static/config.json";
+        var baseUrl = "";
+
+        var config = {};
+        var data = {};
+
+        LoadConfig(window.location.origin + "/" + configPath);
+
+        document.getElementsByClassName("jsonViewer")[0].textContent = JSON.stringify(data, undefined, 3);
+
+        function LoadConfig(path)
+        {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    // Typical action to be performed when the document is ready:
+                    config = JSON.parse(xhttp.responseText);
+                    GenerateHTML(config);
+                    LoadJson(location.search);
+                }
+            };
+            xhttp.open("GET", path, true);
+            xhttp.send();
+        }
+
+        function GenerateHTML(config)
+        {
+            baseUrl = config["BaseUrl"];
+            var apiGroupsObject = document.getElementById("apiGroups");
+
+            for (var i = 0; i < config["ApiGroups"].length; i++) 
+            {
+                var apiGroup = config["ApiGroups"][i];
+
+                var apiGroupObject = document.createElement("div");
+                apiGroupObject.classList.add("apiGroup");
+                apiGroupsObject.appendChild(apiGroupObject);
+
+                var apiGroupHeading = document.createElement("div");
+                apiGroupHeading.classList.add("apiGroupHeading");
+                apiGroupHeading.innerText = apiGroup["GroupName"];
+                apiGroupObject.appendChild(apiGroupHeading);
+
+                for (var j = 0; j < apiGroup["APIs"].length; j++) 
+                {
+                    var apiDataLineObject = document.createElement("div");
+                    apiDataLineObject.classList.add("apiDataLine");
+                    apiGroupObject.appendChild(apiDataLineObject);
+
+                    var apiDataTagObject = document.createElement("div");
+                    apiDataTagObject.classList.add("apiDataTag");
+                    apiDataTagObject.innerText = apiGroup["APIs"][j]["Tag"];
+                    apiDataTagObject.setAttribute("onclick","GenerateViewerLink(this);");
+                    apiDataLineObject.appendChild(apiDataTagObject);
+
+                    var apiDataTypeObject = document.createElement("div");
+                    apiDataTypeObject.classList.add("apiDataType");
+                    apiDataTypeObject.innerText = apiGroup["APIs"][j]["Type"];
+                    apiDataLineObject.appendChild(apiDataTypeObject);
+
+                    var apiDataRouteObject = document.createElement("div");
+                    apiDataRouteObject.classList.add("apiDataRoute");
+                    apiDataRouteObject.innerText = apiGroup["APIs"][j]["Route"];
+                    apiDataLineObject.appendChild(apiDataRouteObject);
+
+                }
+                
+            }
+        }
+
+        function GenerateViewerLink(apiDataTagObject)
+        {
+            var apiDataLine = apiDataTagObject.parentNode;
+            var apiDataType = apiDataLine.getElementsByClassName("apiDataType")[0].innerText;
+            var apiDataRoute = apiDataLine.getElementsByClassName("apiDataRoute")[0].innerText;
+            window.location.href = window.location.origin + "/docs?type=" + apiDataType + "&route=" + apiDataRoute;
+        }
+
+        function LoadJson(url)
+        {
+            var urlParams = new URLSearchParams(url);
+
+            var requestType = urlParams.get("type");
+            var requestRoute = urlParams.get("route");
+
+            if (requestType == null || requestRoute == null)
+            {
+                return;
+            }
+
+            var requestUrl = baseUrl + requestRoute;
+            document.getElementById("requestRoute").value = requestUrl
+            document.getElementById("requestType").value = requestType
+            console.log(requestUrl);
+            
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    // Typical action to be performed when the document is ready:
+                    data = JSON.parse(xhttp.responseText);
+                    document.getElementsByClassName("jsonViewer")[0].textContent = JSON.stringify(data, undefined, 3);
+                }
+            };
+            xhttp.open(requestType, requestUrl, true);
+            xhttp.send();
+        }
+
+    </script>
+
+</html>
