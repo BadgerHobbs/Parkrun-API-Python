@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import math
+import time
 
 session = requests.Session()
 session.headers = {
@@ -415,6 +416,9 @@ class AgeGradedLeagueRank():
         resultSet = int(math.ceil(quantity/1000))
 
         for i in range(1, resultSet+1):
+
+            # To avoid hammering server
+            time.sleep(0.25)
 
             ageGradedLeagueRanksHTML = session.get(event.url + f"results/agegradedleague/?resultSet={resultSet}").text
 

@@ -173,10 +173,10 @@ def GetAgeGradedLeagueRanks(event_id):
     if request.args.get('quantity'):
         quantity = int(request.args.get('quantity'))
 
-    if f"events/{event_id}/age-graded-league-ranks" not in cache:
-        cache[f"events/{event_id}/age-graded-league-ranks"] = parkrun.AgeGradedLeagueRank.GetAgeGradedLeagueRanks(GetEventById(event_id), quantity=quantity)
+    if f"events/{event_id}/age-graded-league-ranks?{quantity}" not in cache:
+        cache[f"events/{event_id}/age-graded-league-ranks?{quantity}"] = parkrun.AgeGradedLeagueRank.GetAgeGradedLeagueRanks(GetEventById(event_id), quantity=quantity)
 
-    return json.dumps(ObjectListToDictList(cache[f"events/{event_id}/age-graded-league-ranks"]))
+    return json.dumps(ObjectListToDictList(cache[f"events/{event_id}/age-graded-league-ranks?{quantity}"]))
 
 @app.route("/v1/events/<event_id>/fastest-500")
 def GetFastest500(event_id):
