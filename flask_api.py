@@ -2,12 +2,17 @@ from flask import Flask, redirect, request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
+import time
+import threading
 import json
 import parkrun_api as parkrun
 
 cache = {}
 
-def Setup():
+def RefreshCache():
+    global cache
+
+    cache = {}
 
     countries = parkrun.Country.GetAllCountries()
     events = parkrun.Event.GetAllEvents()
@@ -16,7 +21,18 @@ def Setup():
     cache["countries"] = countries
     cache["events"] = events
 
+def CacheClearanceThread():
+    global cache
+
+    while True:
+        print("Refreshing Cache")
+        RefreshCache()
+        time.sleep(32400)
+
+threading.Thread(target=CacheClearanceThread).start()
+
 def GetEventById(eventId):
+    global cache
 
     for event in cache["events"]:
         if str(event.id) == (eventId):
@@ -25,6 +41,7 @@ def GetEventById(eventId):
     return None
 
 def GetCountryById(countryId):
+    global cache
 
     for country in cache["countries"]:
         if str(country.id) == (countryId):
@@ -33,6 +50,7 @@ def GetCountryById(countryId):
     return None
 
 def ObjectListToDictList(objectList):
+    global cache
 
     objectDictList = []
 
@@ -42,9 +60,9 @@ def ObjectListToDictList(objectList):
     return objectDictList
 
 def CacheToDict():
+    global cache
 
     cacheDict = {}
-    print(cache)
 
     for cacheItem in cache:
 
@@ -62,14 +80,20 @@ limiter = Limiter(
 
 @app.route("/")
 def GithubRedirect():
+    global cache
+
     return redirect("https://github.com/BadgerHobbs/Parkrun-API-Python", code=302)
 
 @app.route("/v1/cache")
 def GetCache():
+    global cache
+    
+    global cache
     return json.dumps(CacheToDict())
 
 @app.route("/v1/countries")
 def GetCountries():
+    global cache
 
     if "countries" not in cache:
         cache["countries"] = parkrun.Country.GetAllCountries()
@@ -79,6 +103,7 @@ def GetCountries():
 # Event Specific Data
 @app.route("/v1/events")
 def GetEvents():
+    global cache
 
     if "events" not in cache:
         cache["events"] = parkrun.Event.GetAllEvents()
@@ -87,6 +112,7 @@ def GetEvents():
 
 @app.route("/v1/events/<event_id>/history")
 def GetEventHistory(event_id):
+    global cache
 
     if f"events/{event_id}/history" not in cache:
         cache[f"events/{event_id}/history"] = parkrun.EventHistory.GetEventHistorys(GetEventById(event_id))
@@ -95,7 +121,8 @@ def GetEventHistory(event_id):
 
 @app.route("/v1/events/<event_id>/first-finishers")
 def GetFirstFinishers(event_id):
-
+    global cache
+    
     if f"events/{event_id}/first-finishers" not in cache:
         cache[f"events/{event_id}/first-finishers"] = parkrun.FirstFinisher.GetFirstFinishers(GetEventById(event_id))
 
@@ -103,6 +130,7 @@ def GetFirstFinishers(event_id):
 
 @app.route("/v1/events/<event_id>/age-category-records")
 def GetAgeCategoryRecords(event_id):
+    global cache
 
     if f"events/{event_id}/age-category-records" not in cache:
         cache[f"events/{event_id}/age-category-records"] = parkrun.AgeCategoryRecord.GetAgeCategoryRecords(GetEventById(event_id))
@@ -111,7 +139,8 @@ def GetAgeCategoryRecords(event_id):
 
 @app.route("/v1/events/<event_id>/clubs")
 def GetClubs(event_id):
-
+    global cache
+    
     if f"events/{event_id}/clubs" not in cache:
         cache[f"events/{event_id}/clubs"] = parkrun.Club.GetClubs(GetEventById(event_id))
 
@@ -119,6 +148,7 @@ def GetClubs(event_id):
 
 @app.route("/v1/events/<event_id>/sub-20-women")
 def GetSub20Women(event_id):
+    global cache
 
     if f"events/{event_id}/sub-20-women" not in cache:
         cache[f"events/{event_id}/sub-20-women"] = parkrun.Sub20Woman.GetSub20Women(GetEventById(event_id))
@@ -127,6 +157,7 @@ def GetSub20Women(event_id):
 
 @app.route("/v1/events/<event_id>/sub-17-men")
 def GetSub17Men(event_id):
+    global cache  
 
     if f"events/{event_id}/sub-17-men" not in cache:
         cache[f"events/{event_id}/sub-17-men"] = parkrun.Sub17Man.GetSub17Men(GetEventById(event_id))
@@ -135,7 +166,8 @@ def GetSub17Men(event_id):
 
 @app.route("/v1/events/<event_id>/age-graded-league-ranks")
 def GetAgeGradedLeagueRanks(event_id):
-
+    global cache
+    
     quantity = 1000
 
     if request.args.get('quantity'):
@@ -148,6 +180,7 @@ def GetAgeGradedLeagueRanks(event_id):
 
 @app.route("/v1/events/<event_id>/fastest-500")
 def GetFastest500(event_id):
+    global cache
 
     if f"events/{event_id}/fastest-500" not in cache:
         cache[f"events/{event_id}/fastest-500"] = parkrun.Fastest.GetFastest500(GetEventById(event_id))
@@ -157,6 +190,7 @@ def GetFastest500(event_id):
 # Country Specific Data
 @app.route("/v1/countries/<country_id>/week-first-finishers")
 def GetWeekFirstFinishersForCountry(country_id):
+    global cache
 
     if f"countries/{country_id}/week-first-finishers" not in cache:
         cache[f"countries/{country_id}/week-first-finishers"] = parkrun.WeekFirstFinisher.GetWeekFirstFinishersForCountry(GetCountryById(country_id))
@@ -165,6 +199,7 @@ def GetWeekFirstFinishersForCountry(country_id):
 
 @app.route("/v1/countries/<country_id>/week-sub-17-runs")
 def GetWeekSub17RunsForCountry(country_id):
+    global cache
 
     if f"countries/{country_id}/week-sub-17-runs" not in cache:
         cache[f"countries/{country_id}/week-sub-17-runs"] = parkrun.WeekSub17Run.GetWeekSub17RunsForCountry(GetCountryById(country_id))
@@ -173,6 +208,7 @@ def GetWeekSub17RunsForCountry(country_id):
 
 @app.route("/v1/countries/<country_id>/week-top-age-grades")
 def GetWeekTopAgeGradesForCountry(country_id):
+    global cache
 
     if f"countries/{country_id}/week-top-age-grades" not in cache:
         cache[f"countries/{country_id}/week-top-age-grades"] = parkrun.WeekTopAgeGrade.GetWeekTopAgeGradesForCountry(GetCountryById(country_id))
@@ -181,6 +217,7 @@ def GetWeekTopAgeGradesForCountry(country_id):
 
 @app.route("/v1/countries/<country_id>/week-new-category-records")
 def GetWeekNewCategoryRecordsForCountry(country_id):
+    global cache
 
     if f"countries/{country_id}/week-new-category-records" not in cache:
         cache[f"countries/{country_id}/week-new-category-records"] = parkrun.WeekNewCategoryRecord.GetWeekNewCategoryRecordsForCountry(GetCountryById(country_id))
@@ -189,6 +226,7 @@ def GetWeekNewCategoryRecordsForCountry(country_id):
 
 @app.route("/v1/countries/<country_id>/course-records")
 def GetCourseRecordsForCountry(country_id):
+    global cache
 
     if f"countries/{country_id}/course-records" not in cache:
         cache[f"countries/{country_id}/course-records"] = parkrun.CourseRecord.GetCourseRecordsForCountry(GetCountryById(country_id))
@@ -197,6 +235,7 @@ def GetCourseRecordsForCountry(country_id):
 
 @app.route("/v1/countries/<country_id>/attendance-records")
 def GetAttendanceRecordsForCountry(country_id):
+    global cache
 
     if f"countries/{country_id}/attendance-records" not in cache:
         cache[f"countries/{country_id}/attendance-records"] = parkrun.AttendanceRecord.GetAttendanceRecordsForCountry(GetCountryById(country_id))
@@ -205,6 +244,7 @@ def GetAttendanceRecordsForCountry(country_id):
 
 @app.route("/v1/countries/<country_id>/most-events")
 def GetMostEventsForCountry(country_id):
+    global cache
 
     if f"countries/{country_id}/most-events" not in cache:
         cache[f"countries/{country_id}/most-events"] = parkrun.MostEvent.GetMostEventsForCountry(GetCountryById(country_id))
@@ -213,6 +253,7 @@ def GetMostEventsForCountry(country_id):
 
 @app.route("/v1/countries/<country_id>/largest-clubs")
 def GetLargestClubsForCountry(country_id):
+    global cache
 
     if f"countries/{country_id}/largest-clubs" not in cache:
         cache[f"countries/{country_id}/largest-clubs"] = parkrun.LargestClub.GetLargestClubsForCountry(GetCountryById(country_id))
@@ -221,6 +262,7 @@ def GetLargestClubsForCountry(country_id):
 
 @app.route("/v1/countries/<country_id>/joined-100-club")
 def GetJoined100ClubsForCountry(country_id):
+    global cache
 
     if f"countries/{country_id}/joined-100-club" not in cache:
         cache[f"countries/{country_id}/joined-100-club"] = parkrun.Joined100Club.GetJoined100ClubsForCountry(GetCountryById(country_id))
@@ -229,6 +271,7 @@ def GetJoined100ClubsForCountry(country_id):
 
 @app.route("/v1/countries/<country_id>/most-first-finishes")
 def GetMostFirstFinishesForCountry(country_id):
+    global cache
 
     if f"countries/{country_id}/most-first-finishes" not in cache:
         cache[f"countries/{country_id}/most-first-finishes"] = parkrun.MostFirstFinish.GetMostFirstFinishesForCountry(GetCountryById(country_id))
@@ -237,6 +280,7 @@ def GetMostFirstFinishesForCountry(country_id):
 
 @app.route("/v1/countries/<country_id>/freedom-runs")
 def GetFreedomRunsForCountry(country_id):
+    global cache
 
     if f"countries/{country_id}/freedom-runs" not in cache:
         cache[f"countries/{country_id}/freedom-runs"] = parkrun.FreedomRun.GetFreedomRunsForCountry(GetCountryById(country_id))
@@ -245,6 +289,7 @@ def GetFreedomRunsForCountry(country_id):
 
 @app.route("/v1/countries/<country_id>/historic-numbers")
 def GetHistoricNumbersForCountry(country_id):
+    global cache
 
     if f"countries/{country_id}/historic-numbers" not in cache:
         cache[f"countries/{country_id}/historic-numbers"] = parkrun.HistoricNumber.GetHistoricNumbersForCountry(GetCountryById(country_id))
@@ -254,6 +299,7 @@ def GetHistoricNumbersForCountry(country_id):
 # Global Results Data
 @app.route("/v1/global/results/week-first-finishers")
 def GetWeekFirstFinishersGlobally():
+    global cache
 
     if f"global/results/week-first-finishers" not in cache:
         cache[f"global/results/week-first-finishers"] = parkrun.WeekFirstFinisher.GetWeekFirstFinishersGlobally()
@@ -262,6 +308,7 @@ def GetWeekFirstFinishersGlobally():
 
 @app.route("/v1/global/results/new-category-records")
 def GetWeekNewCategoryRecordsGlobally():
+    global cache
 
     if f"global/results/new-category-records" not in cache:
         cache[f"global/results/new-category-records"] = parkrun.WeekNewCategoryRecord.GetWeekNewCategoryRecordsGlobally()
@@ -270,6 +317,7 @@ def GetWeekNewCategoryRecordsGlobally():
 
 @app.route("/v1/global/results/sub-17-runs")
 def GetWeekSub17RunsGlobally():
+    global cache
 
     if f"global/results/sub-17-runs" not in cache:
         cache[f"global/results/sub-17-runs"] = parkrun.WeekSub17Run.GetWeekSub17RunsGlobally()
@@ -278,6 +326,7 @@ def GetWeekSub17RunsGlobally():
 
 @app.route("/v1/global/results/top-age-grades")
 def GetWeekTopAgeGradesGlobally():
+    global cache
 
     if f"global/results/top-age-grades" not in cache:
         cache[f"global/results/top-age-grades"] = parkrun.WeekTopAgeGrade.GetWeekTopAgeGradesGlobally()
@@ -286,6 +335,7 @@ def GetWeekTopAgeGradesGlobally():
 
 @app.route("/v1/global/results/course-records")
 def GetCourseRecordsGlobally():
+    global cache
 
     if f"global/results/course-records" not in cache:
         cache[f"global/results/course-records"] = parkrun.CourseRecord.GetCourseRecordsGlobally()
@@ -294,6 +344,7 @@ def GetCourseRecordsGlobally():
 
 @app.route("/v1/global/results/freedom-runs")
 def GetFreedomRunsGlobally():
+    global cache
 
     if f"global/results/freedom-runs" not in cache:
         cache[f"global/results/freedom-runs"] = parkrun.FreedomRun.GetFreedomRunsGlobally()
@@ -303,6 +354,7 @@ def GetFreedomRunsGlobally():
 # Global Stats Data
 @app.route("/v1/global/stats/largest-clubs")
 def GetLargestClubsGlobally():
+    global cache
 
     if f"global/stats/largest-clubs" not in cache:
         cache[f"global/stats/largest-clubs"] = parkrun.Club.GetLargestClubsGlobally()
@@ -311,6 +363,7 @@ def GetLargestClubsGlobally():
 
 @app.route("/v1/global/stats/attendance-records")
 def GetAttendanceRecordsGlobally():
+    global cache
 
     if f"global/stats/attendance-records" not in cache:
         cache[f"global/stats/attendance-records"] = parkrun.AttendanceRecord.GetAttendanceRecordsGlobally()
@@ -319,6 +372,7 @@ def GetAttendanceRecordsGlobally():
 
 @app.route("/v1/global/stats/most-events")
 def GetMostEventsGlobally():
+    global cache
 
     if f"global/stats/most-events" not in cache:
         cache[f"global/stats/most-events"] = parkrun.MostEvent.GetMostEventsGlobally()
@@ -327,6 +381,7 @@ def GetMostEventsGlobally():
 
 @app.route("/v1/global/stats/most-first-finishes")
 def GetMostFirstFinishesGlobally():
+    global cache
 
     if f"global/stats/most-first-finishes" not in cache:
         cache[f"global/stats/most-first-finishes"] = parkrun.MostFirstFinish.GetMostFirstFinishesGlobally()
@@ -335,5 +390,4 @@ def GetMostFirstFinishesGlobally():
 
 if __name__ == '__main__':
 
-    Setup()
     app.run(host='0.0.0.0', port=5000)
