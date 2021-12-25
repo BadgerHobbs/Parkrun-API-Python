@@ -100,9 +100,13 @@ def ClearCache():
     global cache
     
     if request.args.get("key") == "12345":
+        cache = {}
         RefreshCache()
 
-    return json.dumps(CacheToDict()) 
+        return json.dumps(CacheToDict()) 
+
+    else:
+        return json.dumps({"error": "Invalid key"})
 
 @app.route("/v1/countries")
 def GetCountries():
