@@ -99,7 +99,9 @@ def GetCache():
 def ClearCache():
     global cache
     
-    cache = {}
+    if request.args.get("key") == "12345":
+        RefreshCache()
+
     return json.dumps(CacheToDict()) 
 
 @app.route("/v1/countries")
