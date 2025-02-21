@@ -35,19 +35,19 @@ class Country:
         countriesJson = session.get("https://images.parkrun.com/events.json").json()["countries"]
 
         for countryKey in countriesJson:
+            if countriesJson[countryKey]["url"] is not None:
+                country = Country(
+                    _id=countryKey,
+                    _url="https://" + countriesJson[countryKey]["url"]
+                    )
 
-            country = Country(
-                _id=countryKey, 
-                _url="https://" + countriesJson[countryKey]["url"]
-                )
-
-            countries.append(country)
+                countries.append(country)
 
         return countries
 
 class Event:
 
-    def __init__(self, _id=None, _name=None, _longName=None, _shortName=None, _countryCode=None, _seriesId=None, _location=None, _url=None):
+    def __init__(self, _id=None, _name=None, _longName=None, _shortName=None, _countryCode=None, _seriesId=None, _location=None, _coordinates=None, _url=None):
 
         self.id = _id
         self.name = _name
@@ -56,6 +56,8 @@ class Event:
         self.countryCode = _countryCode
         self.seriesId = _seriesId
         self.location = _location
+        self.latitude = _coordinates[1]
+        self.longitude = _coordinates[0]
         self.url = _url
         
         pass
@@ -76,7 +78,8 @@ class Event:
                 _shortName=event["properties"]["EventShortName"], 
                 _countryCode=event["properties"]["countrycode"], 
                 _seriesId=event["properties"]["seriesid"], 
-                _location=event["properties"]["EventLocation"]
+                _location=event["properties"]["EventLocation"],
+                _coordinates=event["geometry"]["coordinates"]
                 )
 
             events.append(event)
